@@ -29,6 +29,7 @@ INCLUDE_DIRECTORIES(
 	external/glew-1.9.0/include/
 	external/assimp-3.0.1270/include/
 	external/bullet-2.81-rev2613/src/
+	.
 )
 
 SET(ALL_LIBS
@@ -60,8 +61,8 @@ ADD_EXECUTABLE(tutorial02_red_triangle
 	tutorial02_red_triangle/tutorial02.cpp
 	common/shader.cpp
 	common/shader.h
-	tutorial02_red_triangle/SimpleVertexShader.vsh
-	tutorial02_red_triangle/SimpleFragmentShader.fsh)
+	tutorial02_red_triangle/SimpleVertexShader.glsl
+	tutorial02_red_triangle/SimpleFragmentShader.glsl)
 TARGET_LINK_LIBRARIES(tutorial02_red_triangle ${ALL_LIBS})
 # Xcode and Visual working directories
 SET_TARGET_PROPERTIES(tutorial02_red_triangle PROPERTIES XCODE_ATTRIBUTE_CONFIGURATION_BUILD_DIR "${CMAKE_CURRENT_SOURCE_DIR}/tutorial02_red_triangle/")
@@ -70,8 +71,8 @@ CREATE_DEFAULT_TARGET_LAUNCHER(tutorial02_red_triangle WORKING_DIRECTORY "${CMAK
 
 
 
-SOURCE_GROUP(common REGULAR_EXPRESSION ".*/common/.*")
-SOURCE_GROUP(shaders REGULAR_EXPRESSION ".*/.*sh$")
+SOURCE_GROUP(common REGULAR_EXPRESSION ".*/common/.*" )
+SOURCE_GROUP(shaders REGULAR_EXPRESSION ".*/.*glsl$" )
 
 IF (NOT ${CMAKE_GENERATOR} MATCHES "Xcode" )
 ADD_CUSTOM_COMMAND(

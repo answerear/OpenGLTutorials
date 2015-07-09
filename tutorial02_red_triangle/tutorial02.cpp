@@ -5,8 +5,10 @@
 #include <glfw3.h>
 
 #include <glm/glm.hpp>
-
 using namespace glm;
+
+#include <common/shader.h>
+
 
 int main(int argc, char *argv[])
 {
@@ -62,6 +64,8 @@ int main(int argc, char *argv[])
 	// Give our vertices to OpenGL
 	glBufferData(GL_ARRAY_BUFFER, sizeof(g_vertex_buffer_data), g_vertex_buffer_data, GL_STATIC_DRAW);
 
+	GLuint program = LoadShader("SimpleVertexShader.glsl", "SimpleFragmentShader.glsl");
+
 	// Dark blue background
 	glClearColor(0.0f, 0.0f, 0.4f, 0.0f);
 
@@ -69,10 +73,12 @@ int main(int argc, char *argv[])
 	{
 		glClear(GL_COLOR_BUFFER_BIT);
 
+		glUseProgram(program);
+
 		// Draw a triangle
 		glEnableVertexAttribArray(0);
 		glBindBuffer(GL_ARRAY_BUFFER, VertexBuffer);
-		glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 0, (void*)0);
+		glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 0, NULL);
 		glDrawArrays(GL_TRIANGLES, 0, 3);
 		glDisableVertexAttribArray(0);
 
@@ -80,6 +86,10 @@ int main(int argc, char *argv[])
 		glfwSwapBuffers(window);
 		glfwPollEvents();
 	}
+
+	glDeleteBuffers(1, &VertexBuffer);
+	glDeleteVertexArrays(1, &VertexArray);
+	glDeleteProgram(program);
 
 	// Close OpenGL window and terminate GLFW
 	glfwTerminate();
