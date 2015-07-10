@@ -83,20 +83,6 @@ SET_TARGET_PROPERTIES(tutorial03_matrices PROPERTIES XCODE_ATTRIBUTE_CONFIGURATI
 CREATE_TARGET_LAUNCHER(tutorial03_matrices WORKING_DIRECTORY "${CMAKE_CURRENT_SOURCE_DIR}/tutorial03_matrices/") # Visual
 
 
-# Tutorial 04
-ADD_EXECUTABLE(tutorial04_colored_cube
-	tutorial04_colored_cube/tutorial04.cpp
-	common/shader.cpp
-	common/shader.h
-	tutorial04_colored_cube/TransformVertexShader.glsl
-	tutorial04_colored_cube/ColorFragmentShader.glsl)
-TARGET_LINK_LIBRARIES(tutorial04_colored_cube ${ALL_LIBS})
-# Xcode and Visual working directories
-SET_TARGET_PROPERTIES(tutorial04_colored_cube PROPERTIES XCODE_ATTRIBUTE_CONFIGURATION_BUILD_DIR "${CMAKE_CURRENT_SOURCE_DIR}/tutorial04_colored_cube/")
-CREATE_TARGET_LAUNCHER(tutorial04_colored_cube WORKING_DIRECTORY "${CMAKE_CURRENT_SOURCE_DIR}/tutorial04_colored_cube/")
-
-
-
 SOURCE_GROUP(common REGULAR_EXPRESSION ".*/common/.*" )
 SOURCE_GROUP(shaders REGULAR_EXPRESSION ".*/.*glsl$" )
 

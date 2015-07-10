@@ -1,18 +1,20 @@
+
 #include <stdio.h>
 #include <stdlib.h>
 
 #include <gl/glew.h>
 #include <glfw3.h>
-
 #include <glm/glm.hpp>
-
 using namespace glm;
+
+#include <common/shader.h>
 
 int main(int argc, char *argv[])
 {
+	// Initialize GLFW
 	if (!glfwInit())
 	{
-		fprintf(stderr, "Failed to initialize GLFW\n");
+		fprintf(stderr, "");
 		return -1;
 	}
 
@@ -21,25 +23,21 @@ int main(int argc, char *argv[])
 	glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 3);
 	glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
 
-	// Open a window and create its OpenGL context
-	auto window = glfwCreateWindow(1024, 768, "Tutorial 01 - First window", NULL, NULL);
+	auto window = glfwCreateWindow(1024, 768, "Tutorial 04 - Colored cube", NULL, NULL);
 	if (window == nullptr)
 	{
-		fprintf(stderr, "Failed to open GLFW window. If you have an Intel GPU, they are not 3.3 compatible. Try the 2.1 version of the tutorials.\n");
 		glfwTerminate();
-		return -1;
+		return -2;
 	}
 	glfwMakeContextCurrent(window);
 
 	// Initialize GLEW
 	if (glewInit() != GLEW_OK)
 	{
-		fprintf(stderr, "Failed to initialize GLEW\n");
-		return -1;
+		fprintf(stderr, "");
+		glfwTerminate();
+		return -3;
 	}
-
-	// Ensure we can capture the escape key being pressed below
-	glfwSetInputMode(window, GLFW_STICKY_KEYS, GL_TRUE);
 
 	// Dark blue background
 	glClearColor(0.0f, 0.0f, 0.4f, 0.0f);
@@ -48,14 +46,11 @@ int main(int argc, char *argv[])
 	{
 		glClear(GL_COLOR_BUFFER_BIT);
 
-		// Draw nothing
-
-		// Swap buffers
 		glfwSwapBuffers(window);
 		glfwPollEvents();
 	}
 
-	// Close OpenGL window and terminate GLFW
+	// Shutdown GLFW
 	glfwTerminate();
 
 	return 0;
