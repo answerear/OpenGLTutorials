@@ -59,11 +59,14 @@ int main(int argc, char *argv[])
 	GLuint unProgram = LoadShader("TransformVertexShader.glsl", "ColorFragmentShader.glsl");
 
 	// Setup transform matrix
-	glm::mat4 matModel = glm::mat4(1.0f);
+	glm::mat4 matModel1 = glm::translate(glm::mat4(1.0f), glm::vec3(-1.5f, 0.0f, 0.0f));
 	glm::mat4 matView = glm::lookAt(glm::vec3(4, 3, -3), glm::vec3(0, 0, 0), glm::vec3(0, 1, 0));
 	glm::mat4 matProjection = glm::perspective(45.0f, 4.0f/3.0f, 0.1f, 100.0f);
 
-	glm::mat4 matMVP = matProjection * matView * matModel;
+	glm::mat4 matModel2 = glm::translate(glm::mat4(1.0f), glm::vec3(1.5f, 0.0f, 0.0f));
+
+	glm::mat4 matMVP1 = matProjection * matView * matModel1;
+	glm::mat4 matMVP2 = matProjection * matView * matModel2;
 
 	GLuint unMatMVP = glGetUniformLocation(unProgram, "matMVP");
 
@@ -149,22 +152,42 @@ int main(int argc, char *argv[])
 		0.982f,  0.099f,  0.879f
 	};
 
+	static const GLfloat g_tri_vertex_buffer_data[] =
+	{
+		-1.0f, -1.0f, 0.0f,
+		1.0f, -1.0f, 0.0f,
+		0.0f, 1.0f, 0.0f
+	};
+
+	static const GLfloat g_tri_color_buffer_data[] =
+	{
+		1.0f, 0.0f, 0.0f,
+		0.0f, 1.0f, 0.0f,
+		0.0f, 0.0f, 1.0f
+	};
+
 	// Enable VAO
 	glEnableVertexAttribArray(0);
 	glEnableVertexAttribArray(1);
 
 	// Create VBO
-	GLuint unVertexBuffer;
-	glGenBuffers(1, &unVertexBuffer);
-	glBindBuffer(GL_ARRAY_BUFFER, unVertexBuffer);
-	glBufferData(GL_ARRAY_BUFFER, sizeof(g_vertex_buffer_data), g_vertex_buffer_data, GL_STATIC_DRAW);
-	glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 0, NULL);
+	GLuint CubeBuffer[2];
+	glGenBuffers(2, CubeBuffer);
 
-	GLuint unColorBuffer;
-	glGenBuffers(1, &unColorBuffer);
-	glBindBuffer(GL_ARRAY_BUFFER, unColorBuffer);
+	glBindBuffer(GL_ARRAY_BUFFER, CubeBuffer[0]);
+	glBufferData(GL_ARRAY_BUFFER, sizeof(g_vertex_buffer_data), g_vertex_buffer_data, GL_STATIC_DRAW);
+	
+	glBindBuffer(GL_ARRAY_BUFFER, CubeBuffer[1]);
 	glBufferData(GL_ARRAY_BUFFER, sizeof(g_color_buffer_data), g_color_buffer_data, GL_STATIC_DRAW);
-	glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, 0, NULL);
+
+	GLuint TriangleBuffer[2];
+	glGenBuffers(2, TriangleBuffer);
+
+	glBindBuffer(GL_ARRAY_BUFFER, TriangleBuffer[0]);
+	glBufferData(GL_ARRAY_BUFFER, sizeof(g_tri_vertex_buffer_data), g_tri_vertex_buffer_data, GL_STATIC_DRAW);
+
+	glBindBuffer(GL_ARRAY_BUFFER, TriangleBuffer[1]);
+	glBufferData(GL_ARRAY_BUFFER, sizeof(g_tri_color_buffer_data), g_tri_color_buffer_data, GL_STATIC_DRAW);
 
 	while (glfwGetKey(window, GLFW_KEY_ESCAPE) != GLFW_PRESS && glfwWindowShouldClose(window) == 0)
 	{
@@ -172,9 +195,29 @@ int main(int argc, char *argv[])
 
 		glUseProgram(unProgram);
 
-		glUniformMatrix4fv(unMatMVP, 1, GL_FALSE, &matMVP[0][0]);
+		glUniformMatrix4fv(unMatMVP, 1, GL_FALSE, &matMVP1[0][0]);
+
+		glBindBuffer(GL_ARRAY_BUFFER, CubeBuffer[0]);
+		glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 0, NULL);
+		glBindBuffer(GL_ARRAY_BUFFER, 0);
+
+		glBindBuffer(GL_ARRAY_BUFFER, CubeBuffer[1]);
+		glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, 0, NULL);
+		glBindBuffer(GL_ARRAY_BUFFER, 0);
 
 		glDrawArrays(GL_TRIANGLES, 0, 12 * 3);
+
+		glUniformMatrix4fv(unMatMVP, 1, GL_FALSE, &matMVP2[0][0]);
+
+		glBindBuffer(GL_ARRAY_BUFFER, TriangleBuffer[0]);
+		glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 0, NULL);
+		glBindBuffer(GL_ARRAY_BUFFER, 0);
+
+		glBindBuffer(GL_ARRAY_BUFFER, TriangleBuffer[1]);
+		glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, 0, NULL);
+		glBindBuffer(GL_ARRAY_BUFFER, 0);
+
+		glDrawArrays(GL_TRIANGLES, 0, 3);
 
 		glfwSwapBuffers(window);
 		glfwPollEvents();
@@ -184,8 +227,8 @@ int main(int argc, char *argv[])
 	glDisableVertexAttribArray(1);
 
 	glDeleteProgram(unProgram);
-	glDeleteBuffers(1, &unVertexBuffer);
-	glDeleteBuffers(1, &unColorBuffer);
+	glDeleteBuffers(2, CubeBuffer);
+	glDeleteBuffers(2, TriangleBuffer);
 	glDeleteVertexArrays(1, &unVertexArrayID);
 
 	// Shutdown GLFW
